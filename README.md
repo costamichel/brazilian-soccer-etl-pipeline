@@ -1,45 +1,51 @@
 # ⚽ Projeto de Engenharia de Dados: Pipeline ETL - Brasileirão Série A
 
 ## 📌 Visão Geral do Projeto
-Este projeto consiste na construção de uma pipeline de dados automatizada (ETL - *Extract, Transform, Load*) focada em dados esportivos. O objetivo é extrair dados brutos de partidas do Campeonato Brasileiro, tratar as inconsistências e aninhamentos do formato JSON, e carregar essas informações estruturadas em um banco de dados relacional local, disponibilizando uma base limpa e pronta para o consumo de Analistas e Cientistas de Dados.
+Este projeto consiste na construção de uma pipeline de dados automatizada (ETL - *Extract, Transform, Load*) focada em dados esportivos. O objetivo é extrair dados brutos de partidas do Campeonato Brasileiro, tratar as inconsistências e aninhamentos do formato JSON, e estruturar as informações em um banco de dados relacional local utilizando **Modelagem Dimensional (Star Schema)**, disponibilizando uma base otimizada e pronta para o consumo analítico.
 
 ## 🚨 O Problema de Negócio
-No mercado de análise esportiva (Scout e Performance), os dados gerados pelas partidas frequentemente chegam em formatos complexos, desestruturados e com múltiplas camadas (JSONs profundos). Profissionais de dados perdem muito tempo com a limpeza manual antes de conseguirem gerar inteligência. Este projeto cria o "motor invisível" que resolve a ingestão, transformando o caos de dados brutos em tabelas relacionais organizadas de forma 100% programática.
+No mercado de análise esportiva (Scout e Performance), os dados gerados pelas partidas chegam em formatos complexos e desestruturados (JSONs profundos). Profissionais de dados perdem tempo com limpezas manuais, e entregas em "tabelões" monolíticos causam redundância e baixa performance em consultas analíticas. Este projeto resolve isso separando o contexto (catálogos) dos eventos (fatos) de forma 100% programática.
 
-## 🛠️ Arquitetura e Ferramentas
-*   **Linguagem:** Python 3 (uso de Jupyter Notebooks `.ipynb` para execução modularizada).
+## 🏛️ Arquitetura e Modelagem Dimensional (Star Schema)
+O projeto evoluiu de uma única tabela plana para um **Modelo Estrela**, garantindo alta performance de leitura, manutenibilidade e escalabilidade:
+*   **`dim_times` (Dimensão):** Catálogo contendo os dados cadastrais e identificadores dos clubes.
+*   **`dim_estadios` (Dimensão):** Catálogo contendo as informações de locais e cidades dos jogos.
+*   **`fato_partidas` (Fato):** Tabela central focada em métricas e chaves numéricas (IDs), registrando os eventos das partidas e conectando-se diretamente às dimensões.
+
+## 🛠️ Ferramentas Utilizadas
+*   **Linguagem:** Python 3 (Jupyter Notebooks `.ipynb`).
 *   **Fonte de Dados (API):** *API-Sports* (conexão direta via `api-sports.io`).
 *   **Bibliotecas (Python):** 
-    *   `requests`: Comunicação web e extração via protocolo HTTP.
-    *   `pandas`: Motor de transformação, limpeza e modelagem dos dados (DataFrames).
-    *   `python-dotenv`: Gerenciamento de variáveis de ambiente para proteção de credenciais.
-*   **Armazenamento (Banco de Dados):** SQLite (Banco relacional embutido e local).
-*   **Auditoria de Dados:** DBeaver (Visualização e validação das tabelas via SQL).
+    *   `requests`: Comunicação web e extração HTTP.
+    *   `pandas`: Transformação e modelagem de dados.
+    *   `python-dotenv`: Gerenciamento seguro de variáveis de ambiente.
+*   **Armazenamento (Banco de Dados):** SQLite (Banco relacional local).
+*   **Auditoria de Dados:** DBeaver (Validação estrutural e consultas via SQL com `JOIN`).
 
 ## 🚀 Como Executar o Projeto
 
 ### 1. Pré-requisitos
-Certifique-se de ter o Python instalado e instale as bibliotecas necessárias:
+Certifique-se de ter o Python instalado e instale as dependências:
 pip install pandas requests python-dotenv
 
 ### 2. Configuração de Credenciais (Segurança)
 Para rodar este projeto, você precisará de uma Chave de API gratuita da API-Sports.
 1. Crie uma conta em api-sports.io.
 2. Na raiz do projeto, crie um arquivo chamado `.env`.
-3. Adicione a sua chave no arquivo no seguinte formato:
+3. Adicione a sua chave:
 API_KEY_FOOTBALL=sua_chave_de_api_aqui
 
-*Nota: O repositório já conta com um `.gitignore` configurado para impedir o vazamento do arquivo `.env`.*
+*Nota: O repositório conta com um `.gitignore` configurado para impedir o vazamento do arquivo `.env`.*
 
 ### 3. Executando a Pipeline
-Abra o arquivo `extracao_brasileirao.ipynb` em sua IDE (recomendado: VS Code) e execute as células sequencialmente para observar as três etapas do processo (ETL).
+Execute os notebooks de extração e carga para popular as tabelas dimensionais e a tabela fato no banco SQLite local (`banco_brasileirao.db`).
 
-## 🧠 Decisões de Arquitetura e Soluções (Highlights do Projeto)
-
-*   **Bypass de Agregadores:** Em vez de utilizar serviços intermediários (como RapidAPI), a extração foi refatorada para consumir os endpoints diretamente da documentação oficial da API-Sports, garantindo maior estabilidade e controle dos *Headers* de autenticação.
-*   **Tratamento de Regras de Negócio (Tier Limits):** O plano gratuito da API restringe o acesso a temporadas correntes. A pipeline foi adaptada para extrair os dados da temporada histórica de 2023, provando a robustez da arquitetura que funciona independentemente do ano consultado.
-*   **Segurança de Credenciais:** Implementação da biblioteca `dotenv` para isolar a chave da API do código-fonte, garantindo boas práticas de Engenharia de Software e segurança da informação.
-*   **Carga Idempotente:** A inserção no banco de dados SQLite utiliza o parâmetro `if_exists='replace'` do Pandas, permitindo que a pipeline seja executada múltiplas vezes sem gerar duplicidade de registros na tabela final.
+## 🧠 Highlights Técnicos e Decisões de Arquitetura
+*   **Bypass de Agregadores:** Consumo direto dos endpoints da API-Sports, garantindo maior estabilidade de autenticação por *Headers*.
+*   **Modelagem Estrela (Star Schema):** Desacoplamento de atributos textuais em tabelas de dimensões dedicadas, reduzindo redundância e otimizando a performance de cruzamentos (`JOIN`).
+*   **Segurança de Credenciais:** Isolamento de chaves sensíveis utilizando variáveis de ambiente (`python-dotenv`).
+*   **Carga Idempotente:** Utilização de parâmetros de substituição controlada no Pandas para evitar duplicidade na persistência dos dados relacionais.
 
 ## 📊 Status do Projeto
-✅ **Fase 1 (Concluída):** Pipeline ETL ponta a ponta finalizada com sucesso. Dados persistidos em formato tabular no banco local (`banco_brasileirao.db`).
+✅ **Fase 1 (Concluída):** Pipeline ETL ponta a ponta e estruturação inicial.
+✅ **Fase 2 (Concluída):** Implementação da Modelagem Dimensional (`dim_times`, `dim_estadios` e `fato_partidas`) validada via SQL no DBeaver.
