@@ -1,0 +1,33 @@
+name: Bot do Brasileirao ETL
+
+on:
+  schedule:
+    # Roda todos os dias às 09:00 da manhã (Horário de Brasília)
+    # O Cron usa o fuso UTC, então 12:00 UTC = 09:00 BRT
+    - cron: '0 12 * * *'
+  
+  # Este comando cria um botão no GitHub para você rodar manualmente quando quiser
+  workflow_dispatch: 
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest # O sistema operacional do robô
+
+    steps:
+    - name: 📂 Puxando o código do repositório
+      uses: actions/checkout@v3
+
+    - name: 🐍 Configurando o Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 📦 Instalando as bibliotecas
+      run: |
+        pip install -r requirements.txt
+
+    - name: 🚀 Rodando a Pipeline ETL
+      env:
+        # Injetando a senha secreta no ambiente do robô
+        DATABASE_URL: ${{ secrets.DATABASE_URL }} 
+      run: python etl_cartola.py
