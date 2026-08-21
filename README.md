@@ -1,6 +1,6 @@
 # ⚽ Projeto End-to-End: Engenharia de Dados e Analytics - Brasileirão Série A
 
-**Acesse o Dashboard Interativo Ao Vivo:** [🔗 https://share.streamlit.io/]
+**Acesse o Dashboard Interativo Ao Vivo:** [🔗 https://brasileirao-analytics.streamlit.app/]
 
 ## 📌 Visão Geral do Projeto
 Este projeto consiste na construção de uma arquitetura completa de dados ponta a ponta (do *Backend* ao *Frontend* Analítico). O objetivo é extrair dados brutos de partidas em tempo real via API, processá-los na nuvem utilizando **Modelagem Dimensional (Star Schema)**, orquestrar atualizações automáticas diárias e, por fim, disponibilizar as métricas em uma **Aplicação Web Interativa (Business Intelligence)**.
