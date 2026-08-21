@@ -13,14 +13,25 @@ st.title("⚽ Painel Analítico - Brasileirão Série A")
 st.markdown("Acompanhe os resultados e métricas em tempo real direto do banco de dados na nuvem.")
 
 # =============================================================================
-# 2. CONEXÃO COM BANCO DE DADOS (USANDO CACHE)
+# 2. CONEXÃO COM BANCO DE DADOS (USANDO CACHE E SECRETS NATIVOS)
 # =============================================================================
 @st.cache_data
 def carregar_dados():
     load_dotenv()
-    db_url = os.getenv("DATABASE_URL")
     
-    if db_url and db_url.startswith("postgres://"):
+    # 1. Tenta pegar a variável do Streamlit Secrets (Nuvem)
+    if "DATABASE_URL" in st.secrets:
+        db_url = st.secrets["DATABASE_URL"]
+    # 2. Se não achar, tenta pegar do arquivo .env (Local)
+    else:
+        db_url = os.getenv("DATABASE_URL")
+    
+    # Trava de segurança para avisar se a senha realmente sumiu
+    if not db_url:
+        st.error("🚨 Erro: A String de Conexão não foi encontrada nas Secrets.")
+        st.stop()
+        
+    if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
         
     engine = create_engine(db_url)
