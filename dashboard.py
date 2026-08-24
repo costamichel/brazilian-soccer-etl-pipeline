@@ -15,7 +15,8 @@ st.markdown("Acompanhe os resultados e métricas em tempo real direto do banco d
 # =============================================================================
 # 2. CONEXÃO COM BANCO DE DADOS (USANDO CACHE E SECRETS NATIVOS)
 # =============================================================================
-@st.cache_data
+# O cache expira automaticamente a cada 1 hora (3600 segundos)
+@st.cache_data(ttl=3600)
 def carregar_dados():
     load_dotenv()
     
