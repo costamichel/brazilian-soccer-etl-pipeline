@@ -9,6 +9,16 @@ from sqlalchemy import create_engine
 # =============================================================================
 st.set_page_config(layout="wide", page_title="Dashboard Brasileirão 2026", page_icon="⚽")
 
+# --- Link para o GitHub na Barra Lateral ---
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 👨‍💻 Código Fonte")
+st.sidebar.markdown("Gostou do projeto? Veja a arquitetura e o código completo no repositório:")
+
+# Botão nativo do Streamlit
+st.sidebar.link_button("🔗 Acessar GitHub", "https://github.com/costamichel/brazilian-soccer-etl-pipeline")
+
+st.sidebar.markdown("---")
+
 st.title("⚽ Painel Analítico - Brasileirão Série A")
 st.markdown("Acompanhe os resultados e métricas em tempo real direto do banco de dados na nuvem.")
 
