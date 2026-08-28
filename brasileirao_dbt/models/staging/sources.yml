@@ -1,0 +1,7 @@
+version: 2
+
+sources:
+  - name: supabase_prod
+    schema: public
+    tables:
+      - name: fato_partidas

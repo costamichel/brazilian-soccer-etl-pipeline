@@ -26,11 +26,12 @@ clean-targets:         # directories to be removed by `dbt clean`
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
-# In this example config, we tell dbt to build all models in the example/
-# directory as views. These settings can be overridden in the individual model
-# files using the `{{ config(...) }}` macro.
 models:
   brasileirao_dbt:
-    # Config indicated by + and applies to all files under models/example/
-    example:
+    # Tudo dentro da pasta staging será criado como View
+    staging:
       +materialized: view
+      
+    # Tudo dentro da pasta marts será gravado como Tabela Física
+    marts:
+      +materialized: table

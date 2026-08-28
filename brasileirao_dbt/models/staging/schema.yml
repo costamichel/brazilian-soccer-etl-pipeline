@@ -1,0 +1,11 @@
+version: 2 
+
+models:
+  - name: stg_partidas
+    description: "Tabela base (staging) contendo os dados brutos das partidas do Brasileirão."
+    columns: 
+      - name: id_partida
+        description: "Chave primária única de cada partida."
+        tests:
+          - unique 
+          - not_null
