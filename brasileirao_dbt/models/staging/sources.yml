@@ -5,3 +5,4 @@ sources:
     schema: public
     tables:
       - name: fato_partidas
+      - name: dim_times
