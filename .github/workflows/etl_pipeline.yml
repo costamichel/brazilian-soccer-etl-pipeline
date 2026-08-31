@@ -3,7 +3,6 @@ name: Bot do Brasileirao ETL
 on:
   schedule:
     # Roda todos os dias às 09:00 da manhã (Horário de Brasília)
-    # O Cron usa o fuso UTC, então 12:00 UTC = 09:00 BRT
     - cron: '0 12 * * *'
   
   # Este comando cria um botão no GitHub para você rodar manualmente quando quiser
@@ -11,7 +10,7 @@ on:
 
 jobs:
   run-etl:
-    runs-on: ubuntu-latest # O sistema operacional do robô
+    runs-on: ubuntu-latest
 
     steps:
     - name: 📂 Puxando o código do repositório
@@ -26,8 +25,40 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-    - name: 🚀 Rodando a Pipeline ETL
+    - name: 🚀 Rodando a Pipeline ETL (Python)
       env:
-        # Injetando a senha secreta no ambiente do robô
         DATABASE_URL: ${{ secrets.DATABASE_URL }} 
       run: python etl_cartola.py
+
+    - name: ⚙️ Gerando o profiles.yml dinamicamente
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        python -c "
+        import os
+        from urllib.parse import urlparse
+        
+        url = urlparse(os.environ['DATABASE_URL'])
+        schema = 'public' # Ajuste para o seu schema do Supabase, se for diferente
+        
+        profile = f'''
+        brasileirao_dbt:
+          target: dev
+          outputs:
+            dev:
+              type: postgres
+              host: {url.hostname}
+              user: {url.username}
+              password: {url.password}
+              port: {url.port}
+              dbname: {url.path[1:]}
+              schema: {schema}
+              threads: 4
+        '''
+        with open('profiles.yml', 'w') as f:
+            f.write(profile)
+        "
+
+    - name: 🏗️ Rodando as transformações do dbt
+      run: |
+        dbt run --profiles-dir .

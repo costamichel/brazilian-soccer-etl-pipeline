@@ -55,7 +55,7 @@ def carregar_dados():
         f.gols_mandante,
         f.gols_visitante,
         t_visitante.nome AS visitante
-    FROM fato_partidas f
+    FROM dbt_dev.mart_partidas_enriquecidas f
     JOIN dim_times t_mandante ON f.id_time_mandante = t_mandante.id
     JOIN dim_times t_visitante ON f.id_time_visitante = t_visitante.id
     WHERE f.gols_mandante IS NOT NULL
