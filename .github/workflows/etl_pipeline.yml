@@ -61,4 +61,4 @@ jobs:
 
     - name: 🏗️ Rodando as transformações do dbt
       run: |
-        dbt run --profiles-dir .
+        dbt run --project-dir brasileirao-dbt --profiles-dir .
