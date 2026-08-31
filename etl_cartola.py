@@ -2,7 +2,7 @@ import os
 import requests
 import pandas as pd
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 # =============================================================================
 # 0. CONFIGURAÇÃO DE AMBIENTE E BANCO DE DADOS
@@ -59,7 +59,12 @@ if resposta_clubes.status_code == 200:
     df_times = df_times[['id', 'nome', 'abreviacao', 'url_escudo']]
     
     # Mandando para a Nuvem
-    df_times.to_sql(name='dim_times', con=engine, if_exists='replace', index=False)
+    # Limpa os dados antigos mantendo a estrutura da tabela intacta para o dbt
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM dim_times;"))
+
+    # Insere os dados novos usando 'append' no lugar de 'replace'
+    df_times.to_sql(name='dim_times', con=engine, if_exists='append', index=False)
     print("✅ dim_times salva no Supabase com sucesso!")
 
 # =============================================================================
@@ -93,7 +98,12 @@ for rodada in range(1, total_rodadas + 1):
 if dados_fatos:
     df_fatos = pd.DataFrame(dados_fatos)
     # Mandando para a Nuvem
-    df_fatos.to_sql(name='fato_partidas', con=engine, if_exists='replace', index=False)
+    # Limpa os dados antigos mantendo a estrutura da tabela intacta para o dbt
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM fato_partidas;"))
+
+    # Insere os dados novos usando 'append' no lugar de 'replace'
+    df_fatos.to_sql(name='fato_partidas', con=engine, if_exists='append', index=False)
     print(f"\n✅ fato_partidas ({len(df_fatos)} linhas) salva no Supabase com sucesso!")
 
 print("🎉 ETL Finalizada! Dados 100% na Nuvem.")
