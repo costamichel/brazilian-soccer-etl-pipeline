@@ -49,6 +49,7 @@ classificacao_calculada AS (
 
 -- Trazendo o nome do time para o resultado final
 SELECT
+    row_number() OVER (ORDER BY c.pontos DESC, c.vitorias DESC, c.saldo_gols DESC) AS posicao,
     c.id_time,
     t.nome, 
     c.partidas_jogadas,
@@ -56,9 +57,9 @@ SELECT
     c.vitorias,
     c.empates,
     c.derrotas,
-    c.gols_pro,
-    c.gols_contra,
-    c.saldo_gols
+    cast(c.gols_pro as int) as gols_pro,
+    cast(c.gols_contra as int) as gols_contra,
+    cast(c.saldo_gols as int) as saldo_gols
 FROM classificacao_calculada c
 LEFT JOIN {{ ref('stg_times') }} t  
     ON c.id_time = t.id
