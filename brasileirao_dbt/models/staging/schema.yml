@@ -1,11 +1,36 @@
-version: 2 
+version: 2
 
 models:
   - name: stg_partidas
     description: "Tabela base (staging) contendo os dados brutos das partidas do Brasileirão."
-    columns: 
+    columns:
       - name: id_partida
         description: "Chave primária única de cada partida."
         tests:
-          - unique 
+          - unique
+          - not_null
+      - name: rodada
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38]
+      - name: id_time_mandante
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_times')
+              field: id
+      - name: id_time_visitante
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_times')
+              field: id
+
+  - name: stg_times
+    description: "Dimensão de times do Campeonato Brasileiro."
+    columns:
+      - name: id
+        tests:
+          - unique
           - not_null

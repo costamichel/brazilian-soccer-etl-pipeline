@@ -61,4 +61,5 @@ jobs:
 
     - name: 🏗️ Rodando as transformações do dbt
       run: |
-        dbt run --project-dir brasileirao_dbt --profiles-dir .
+        dbt build --project-dir brasileirao_dbt --profiles-dir .
+        # dbt_build é um comando que executa todas as etapas do dbt: run, test, snapshot e seed. Ele é útil para pipelines de CI/CD, pois garante que todas as transformações e testes sejam executados em sequência.
